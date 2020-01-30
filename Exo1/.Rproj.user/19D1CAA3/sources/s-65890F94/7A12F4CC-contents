@@ -1,0 +1,275 @@
+#dependencies
+#install.packages("pls")
+#install.packages("Matrix")
+#install.packages("ggfortify")
+#install.packages("ggplot2")
+
+
+library(ggplot2)
+library(ggfortify)
+library(pls)
+library(Matrix)
+
+#Some functions
+
+RMSE <- function(fitted, true){
+  sqrt(mean((fitted - true)^2))
+}
+
+R2 <- function(fitted, true){
+  1 - (sum((true - fitted)^2)/sum((true - mean(true))^2))
+}
+
+
+#load dataset
+dsfull <- read.delim("C:/Users/MCRIMI/Google Drive/Grad school/DSTI/Stats/Advanced/Submission/Exo1/procespin.txt")
+
+
+##################
+#1- DATA WRANGLING  #
+##################
+
+#X,Y
+Y<-dsfull$y
+X<-subset.data.frame(dsfull, select = -c(y))
+
+
+#######################
+#2- BASIC INSPECTION  #
+#######################
+
+#check for missing data
+is.na.data.frame(dsfull)
+
+#explore
+summary(dsfull)
+#looks like x1 has a lot of variance
+boxplot(dsfull)
+#x1 has a lot of variance compared to the other variables
+#and it also seems to be in a different scale
+
+boxplot(scale(dsfull))
+
+cor(X)
+#seems like (x6 & x9), (x3 & x6), (x9 and x3), (x4 and x5) are highly correlated
+
+cor(X,Y)
+#all correlations with Y are negative. not sure what it means
+
+
+rk<-rankMatrix(data.matrix(X))
+rk[1]
+#matrix is of rank 10, so we have 10 linearly independent subspaces
+
+
+
+#######################################
+#3- DEFINE TRAINING AND LEARNING DATA #
+#######################################
+
+## set the seed to make partition reproducible
+set.seed(123)
+
+## 75% of the sample size goes for training
+smp_size <- floor(0.75 * nrow(dsfull))
+
+#randomly pick the training individuals
+train_ind <- sample(seq_len(nrow(dsfull)), size = smp_size)
+
+
+#create training and testing subdatasets
+dstrain <- dsfull[train_ind, ]
+dstest <- dsfull[-train_ind, ]
+
+#split into explanatory and response variables
+#training X,Y
+Ytrn<-dstrain$y
+Xtrn<-subset.data.frame(dstrain, select = -c(y))
+
+#testing X,Y
+Ytst<-dstest$y
+Xtst<-subset.data.frame(dstest, select = -c(y))
+
+
+#######################
+#3- MODELING           #
+#######################
+
+### PCA Analysis
+
+#A first naive attempt with no scaling in X
+
+pca <- prcomp(Xtrn, center = TRUE)
+summary(pca)
+plot(pca)
+autoplot(pca, loadings = TRUE, loadings.label = TRUE, loadings.label.size = 3)
+
+#Would seem like PC1 explains 99.27% of the dataset variance, x1 being the main contributor
+# PC2 would explain 0.35% of the data, with x3, and x2 as the main influencers
+
+#Now, let's look at the scaled version
+pca.scaled <- prcomp(scale(Xtrn), center = TRUE)
+summary(pca.scaled)
+plot(pca.scaled)
+autoplot(pca.scaled, loadings = TRUE, loadings.label = TRUE, loadings.label.size = 3)
+ggbiplot(pca.scaled)
+
+#Things look quite different in in the scaled version
+
+
+
+##########################
+# MULTIPLE LINEAR MODELS #
+##########################
+
+#Baseline model
+
+baseLinregModel<-lm(Ytrn~.,Xtrn)
+plot(baseLinregModel)
+summary(baseLinregModel)
+plot(baseLinregModel$fitted.values,Ytrn)
+hist(baseLinregModel$residuals)
+#Residuals look standard normalish, with expectation 0.   
+
+#testing
+baseLinregModel.testPred <- predict(baseLinregModel, newdata=Xtst)
+baseLinregModel.testPredR2 <- R2(fitted= baseLinregModel.testPred, true=Ytst)
+baseLinregModel.testPredRMSE <- RMSE(fitted= baseLinregModel.testPred, true=Ytst)
+
+baseLinregModel.testPredR2
+
+#LM with scaled variables
+scaledLM<-lm(Ytrn~.,as.data.frame(scale(Xtrn)))
+plot(scaledLM)
+summary(scaledLM)
+plot(scaledLM$fitted.values,Ytrn)
+hist(scaledLM$residuals)
+
+#testing
+scaledLM.testPred <- predict(scaledLM, newdata=as.data.frame(scale(Xtst)))
+scaledLM.testPredR2 <- R2(fitted= scaledLM.testPred, true=Ytst)
+scaledLM.testPredRMSE <- RMSE(fitted= scaledLM.testPred, true=Ytst)
+
+scaledLM.testPredR2
+
+#LM using all of the components
+projectedTrain <- as.data.frame(predict(pca.scaled,Xtrn),
+                                stringsAsFactors = FALSE)
+
+projectedTrain$y <- Ytrn
+vars = colnames(projectedTrain)
+varexpr = paste(vars, collapse="+")
+fmla = paste("y ~", varexpr)
+
+pcrManualAll <- lm(fmla,data=projectedTrain)
+summary(pcrManualAll)
+
+
+#unsuprisingly I get the same Rsquared and AdjustedRsquares
+#we seem to have lost power with this one rSq=0.5411. Adjusted  Rsq is better of course.
+
+
+#PCR (Principal component regression)
+pcr <-pcr(Ytrn~., data = Xtrn, scale = TRUE, validation = "CV", ncomp=10) #using crossvalidation 
+plot(pcr)
+summary(pcr)
+#reduction to less components results in loss of Y variance explenation onthe crossvalidation
+#interestingl there are some peakse in component adition while other add very littile 
+#information. (ie 2 to 3, 5 to 6, 8 to 9)
+
+hist(pcr$residuals)
+
+# Plot the root mean squared error
+validationplot(pcr)
+validationplot(pcr, val.type = "R2")
+predplot(pcr)
+coefplot(pcr)
+
+#testing 
+
+pcr.testPred <- predict(pcr, newdata=Xtst, scale=true)
+maxR2=0
+
+# loop over the fitted values by number of components used
+for (i in c(10:1))
+{
+  currentR2<-R2(fitted= pcr.testPred[,"Ytrn",i], true=Ytst)
+  if (currentR2>maxR2) {
+      maxR2<-currentR2
+      ncomp<-i
+  }
+  
+}
+
+pcr.testPredR2 <-maxR2
+pcr.testPredR2
+
+#TODO:ncomp=9 gives us the lowest MSE so far, it remains to be seen why.
+
+##################################
+#RESIDUALS NORMALITY CHECKING    #
+##################################
+
+plot(scaledLM)
+#Q/Q plots also demonstrates adequate fit for scaled and non scaled baselines
+
+shapiro.test(scaledLM$residuals)
+#p-value = 0.6272>0.05, we cannot reject the hypothesis that 
+#the residuals comes from a populatinon which noise is  normally distributed
+
+
+##########################
+# VARIABLE SELECTION     #
+##########################
+
+#manual backwards strategy using R2 as the metric
+
+step <- lm(Ytrn~.,as.data.frame(scale(Xtrn)))
+
+for (i in c(10:1))
+{
+stepback <- lm(Ytrn~.,as.data.frame(scale(Xtrn[,-c(i:10)])))
+
+  if (summary(stepback)$adj.r.squared>summary(step)$adj.r.squared) {
+    break
+  } else {
+    step <- stepback
+  }
+  
+}
+
+
+#manual forward strategy using R2 as the metric
+
+step <- lm(Ytrn~.,as.data.frame(scale(Xtrn)))
+
+for (i in c(1:10))
+{
+  stepfw <- lm(Ytrn~.,as.data.frame(scale(Xtrn[,c(1:i)])))
+  
+  if (summary(stepfw)$adj.r.squared>summary(step)$adj.r.squared) {
+    break
+  } else {
+    step <- stepfw
+  }
+  
+}
+summary(step)
+
+
+
+#penalized: lasso/ridge
+
+
+
+
+
+
+##########################
+# DECISION TREES         #
+##########################
+
+
+
+
+

@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1579350878060.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4073485248",
+    "id" : "54211005",
+    "lastKnownWriteTime" : 1580307850,
+    "last_content_update" : 1580307850148,
+    "path" : "C:/Users/MCRIMI/Google Drive/Grad school/DSTI/Stats/Advanced/Submission/Exo2/Ex2.R",
+    "project_path" : "Ex2.R",
+    "properties" : {
+        "cursorPosition" : "158,17",
+        "scrollLine" : "126",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

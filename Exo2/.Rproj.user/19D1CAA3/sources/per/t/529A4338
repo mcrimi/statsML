@@ -1,0 +1,33 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580293788742.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "529A4338",
+    "lastKnownWriteTime" : 8245921743788139375,
+    "last_content_update" : 1580293788742,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "40E98677",
+        "caption" : "dataset1",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=dataset1&cache_key=40E98677",
+        "displayedObservations" : 0,
+        "environment" : "",
+        "expression" : "dataset1",
+        "object" : "dataset1",
+        "preview" : 0,
+        "totalObservations" : 0,
+        "variables" : 1492
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

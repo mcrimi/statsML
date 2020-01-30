@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580300748168.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "4672B0B6",
+    "lastKnownWriteTime" : 14073972177305692,
+    "last_content_update" : 1580300748168,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "context" : "package:stats:::fisher.test"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_code_browser"
+}
