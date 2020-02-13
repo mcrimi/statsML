@@ -1,0 +1,1 @@
+"0","legend(""topright"", lty = 1, col = 1:6, legend = names(fit.4$strata))"

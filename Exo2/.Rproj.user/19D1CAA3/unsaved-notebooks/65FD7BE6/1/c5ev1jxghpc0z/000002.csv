@@ -1,0 +1,4 @@
+"0","library(asaur)"
+"0",""
+"0","dat <- pancreatic"
+"0","head(dat)"

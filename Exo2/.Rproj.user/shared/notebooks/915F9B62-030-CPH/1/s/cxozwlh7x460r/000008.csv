@@ -1,0 +1,8 @@
+"0","library(survival)"
+"0",""
+"0","dat <- lung"
+"0","dat$sex <- factor(dat$sex, levels= 1:2, labels=c(""M"",""F""))"
+"0","dat$delta<-dat$status - 1"
+"0","dat$S<-with(dat, Surv(time/365.25,delta))"
+"0",""
+"0","head(dat)"

@@ -1,0 +1,2 @@
+"0","f <- Vectorize(pLogLik)"
+"0","curve(f, from = -4, to = 4)"

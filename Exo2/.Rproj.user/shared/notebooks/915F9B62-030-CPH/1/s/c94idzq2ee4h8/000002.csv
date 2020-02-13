@@ -1,0 +1,1 @@
+"0","dat.events <- subset(dat, failure == 1)"

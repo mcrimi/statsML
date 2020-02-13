@@ -1,0 +1,3 @@
+"0","LRT <- 2 * (fit.ML$maximum - pLogLik(0))"
+"0","data.frame(LRT = LRT,"
+"0","           pvalue = pchisq(LRT, df = 1, lower.tail = FALSE))"

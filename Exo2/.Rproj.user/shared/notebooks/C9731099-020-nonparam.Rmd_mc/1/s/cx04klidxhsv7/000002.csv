@@ -1,0 +1,4 @@
+"0","plot(fit.KM, mark.time = TRUE,"
+"0","     main = ""Kaplan-Meier estimator"","
+"0","     ylab = ""Survival probability"","
+"0","     xlab = ""time (seconds)"")"

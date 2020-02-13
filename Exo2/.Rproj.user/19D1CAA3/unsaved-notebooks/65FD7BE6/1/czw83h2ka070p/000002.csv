@@ -1,0 +1,1 @@
+"0","with(dat, mosaicplot(table(grp, ageGroup2)))"

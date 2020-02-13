@@ -1,0 +1,4 @@
+"0","dat <- mutate(dat,"
+"0","  OS = difftime(death, onstudy, units = ""days""),"
+"0","  PFS = ifelse(!is.na(progression), difftime(progression, onstudy, units = ""days""), OS)"
+"0",")"

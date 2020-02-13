@@ -1,0 +1,189 @@
+---
+title: "Cox regression"
+---
+
+# A manually worked out, simple example: two groups
+
+## Load libraries
+```{r}
+library(tidyverse)
+library(maxLik)
+library(survival)
+```
+
+## Data definition
+
+Lets enter the data in R:
+```{r}
+dat <- data.frame(ratID = paste0("rat", 1:5),
+                  time = c(55, 50, 70, 120, 110),
+                  failure = c(0, 1, 1, 0, 1),
+                  group = c(0, 1, 0, 1, 1))
+```
+
+Total number of failures D:
+```{r}
+sum(dat$failure)
+```
+
+For convenience, rename 'group' to 'x':
+```{r}
+dat <- rename(dat, x = group)
+dat
+```
+
+We also define an auxiliary data.frame containing events only:
+```{r}
+dat.events <- subset(dat, failure == 1)
+```
+
+## Partial log-likelihood function
+
+Lets define the partial (log-)likelihood function
+```{r}
+pLogLik <- function(beta) {
+  numerator <- with(dat.events, x * beta)
+  denominator <- rep(NA_real_, length(numerator))
+  for(j in seq_along(denominator)) {
+    risk_set <- subset(dat, time >= dat.events[j, "time"])
+    theta_j <- with(risk_set, exp(x * beta))
+    denominator[j] <- log(sum(theta_j))
+  }
+  return(sum(numerator - denominator))
+}
+```
+
+We can plot it:
+```{r}
+f <- Vectorize(pLogLik)
+curve(f, from = -4, to = 4)
+```
+
+## Maximum partial-Likelihood estimation
+```{r}
+fit.ML <- maxLik(pLogLik, start = c(beta = 0))
+summary(fit.ML)
+```
+
+With the `coxph` function:
+```{r}
+fit.cph <- coxph(Surv(time, failure) ~ x, data = dat)
+summary(fit.cph)
+```
+
+We can reproduce the Likelihood-ratio test:
+```{r}
+LRT <- 2 * (fit.ML$maximum - pLogLik(0))
+data.frame(LRT = LRT,
+           pvalue = pchisq(LRT, df = 1, lower.tail = FALSE))
+```
+
+The Wald test is already in the `maxLik` summary output.
+
+# A manually worked out, simple example: one continuous covariate
+
+```{r}
+dat <- data.frame(time = c(6, 7, 10, 15, 19, 25),
+                  event = c(1, 0, 1, 1, 0, 1),
+                  age = c(67, 62, 34, 41, 46, 28))
+```
+
+```{r}
+fit <- coxph(Surv(time, event) ~ age, data = dat)
+summary(fit)
+```
+
+We might express age in decades:
+```{r}
+dat <- mutate(dat, age_dec = age / 10)
+summary(coxph(Surv(time, event) ~ age_dec, data = dat))
+```
+
+# Case study: the pharmacoSmoking dataset
+
+## Load the data
+```{r}
+library(asaur)
+dat <- pharmacoSmoking
+head(dat)
+```
+
+## Fit the Cox model
+```{r}
+fit <- coxph(Surv(ttr, relapse) ~ grp + age + gender + priorAttempts, data = dat)
+summary(fit)
+```
+
+We can change the contrasts as we see fit:
+```{r}
+dat <- mutate(dat, grp = relevel(grp, ref = "patchOnly"))
+fit <- update(fit)
+summary(fit)
+```
+
+# Case study: the lung cancer dataset
+
+## Load the data
+```{r}
+library(survival)
+
+dat <- lung
+dat$sex <- factor(dat$sex, levels= 1:2, labels=c("M","F"))
+dat$delta<-dat$status - 1
+dat$S<-with(dat, Surv(time/365.25,delta))
+
+head(dat)
+```
+```{r}
+table(dat$sex, useNA= "always")
+
+```
+Fit
+```{r}
+fit.KM<-survfit(S~1, data=dat)
+plot(fit.KM)
+
+```
+```{r}
+print(fit.KM)
+```
+
+```{r}
+fit.KM<-survfit(S~sex, data=dat)
+plot(fit.KM, col = 1:2)
+fit.KM
+```
+
+Test dif 
+
+```{r}
+survdiff(S~sex,data=dat)
+```
+```{r}
+summary(coxph(S~sex, data=dat))
+```
+
+## Nelson-AAlen estimators
+```{r}
+pred.NA <- survfit(Surv(time, status) ~ sex, data = dat, type = "fh")
+plot(pred.NA, col = 1:2)
+```
+
+## Cox regression: predictions
+```{r}
+fit.cph <- coxph(Surv(time, status) ~ sex, data = dat)
+
+pred.cph <- survfit(fit.cph, newdata = data.frame(sex = factor(1:2)),
+                    type = "aalen")
+
+plot(pred.cph, col = 1:2)
+```
+
+How does the proportional hazards assumption hold?
+```{r}
+plot(pred.NA, fun = "cloglog", col = 1:2)
+```
+
+```{r}
+plot(pred.cph, fun = "cloglog", col = 1:2)
+```

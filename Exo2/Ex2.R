@@ -1,4 +1,3 @@
-#Install
 #install.packages("synbreedData")
 #install.packages("synbreed")
 #install.packages("genetics")
@@ -253,5 +252,5 @@ M1241genotypes<-genotype(mice$geno[,c("M1241")], sep = "/")
 summary(M1241genotypes)
 plot(M1241genotypes)
 
-#Second conclusion: We can conclude that allele G could constitute a risk allele in SNP M1241 
-#for higher weight
+#Second conclusion: We can conclude that allele G migth constitutes a risk allele in SNP M1241 
+#for higher weight. Significance testing is needed.

@@ -1,0 +1,3 @@
+"0","library(asaur)"
+"0","dat <- pharmacoSmoking"
+"0","head(dat)"

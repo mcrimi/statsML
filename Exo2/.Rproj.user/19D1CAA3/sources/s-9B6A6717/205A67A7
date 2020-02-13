@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1581336988154.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3156768917",
+    "id" : "205A67A7",
+    "lastKnownWriteTime" : 1581338099,
+    "last_content_update" : 1581338099134,
+    "path" : "C:/Users/MCRIMI/Google Drive/Grad school/DSTI/Stats/Survival/030-CPH.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "163,0",
+        "scrollLine" : "155",
+        "tempName" : "Untitled2"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

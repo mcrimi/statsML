@@ -1,0 +1,2 @@
+"0","pred.NA <- survfit(Surv(time, status) ~ sex, data = dat, type = ""fh"")"
+"0","plot(pred.NA, col = 1:2)"

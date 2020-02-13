@@ -23,7 +23,7 @@ library(rpart.plot) #for cool trees
 library(VSURF) #for random forest variable selection
 
 ## set the seed to make randomizations reproducible
-seed=sample(1:132, 1)
+seed=132
 set.seed(seed)
 
 
@@ -200,7 +200,7 @@ CVMSE_Custom <- function(data,seed){
 #1- DATA LOADING    #
 #####################
 #load dataset
-dsfull <- read.delim("C:/Users/MCRIMI/Google Drive/Grad school/DSTI/Stats/Advanced/Submission/Exo1/procespin.txt")
+dsfull <- read.delim("procespin.txt")
 
 #Extract response variables
 Yraw<-dsfull$y
@@ -692,4 +692,27 @@ paste( "Minimum CVMSE of ",
        ".")
 
 
+############
+#CONCLUSION#
+############
+
+#Using this particular seed (123), the best performing model seems to be fitPrunedTreeVS.
+summary(fitPrunedTreeVS)
+fitPrunedTreeVS.CVMSE
+#But thewith model fitBoth_AIC following close
+fitBoth_AIC.CVMSE
+#This second model has a similar performance and even outperforms fitPrunedTreeVS in some runs 
+#with different seeds 
+#(see script below to test performance ver 20 iterations with random seeds
+
+#A closer comparison between the two models shows very simmilar performance on prediction, 
+#but no common denominator in the selected explanatory variables. Very intriguing!
+summary(fitBoth_AIC)
+
+#Being forced to conclude I'd say, that based on the extreme simplicity of the model created 
+#by random forest variable selection posterior CART tree pruning (single node, x8 as a single explanatory variable) 
+#we would be inclined to choose this model for prediction, but it is evident 
+#that it's performance is at least matched by fitBoth_AIC.
+
+#It is remains to be seen why the intercept x1,x2,x4 and x5 perform so well in the linear context 
 

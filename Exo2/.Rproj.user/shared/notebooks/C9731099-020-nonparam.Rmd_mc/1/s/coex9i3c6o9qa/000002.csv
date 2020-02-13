@@ -1,0 +1,4 @@
+"0","dat <- mutate(dat,"
+"0","  OS = as.numeric(OS) / 30.5,"
+"0","  PFS = as.numeric(PFS) / 30.5"
+"0",")"

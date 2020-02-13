@@ -1,0 +1,2 @@
+"0","fit.KM<-survfit(S~sex, data=dat)"
+"0","plot(fit.KM, col = 1:2)"

@@ -1,0 +1,7 @@
+"0","fmt <- ""%m/%d/%Y"""
+"0","dat <- mutate(dat,"
+"0","  onstudy = as.Date(as.character(onstudy), format = fmt),"
+"0","  progression = as.Date(as.character(progression), format = fmt),"
+"0","  death = as.Date(as.character(death), format = fmt)"
+"0",")"
+"0","head(dat)"

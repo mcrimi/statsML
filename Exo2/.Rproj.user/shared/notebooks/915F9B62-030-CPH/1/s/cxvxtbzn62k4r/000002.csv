@@ -1,0 +1,7 @@
+"0","fit.cph <- coxph(Surv(time, status) ~ sex, data = dat)"
+"0",""
+"0","pred.cph <- survfit(fit.cph, newdata = data.frame(sex = factor(1:2)),"
+"0","                    type = ""aalen"")"
+"2","Error in model.frame.default(data = list(sex = 1:2), formula = ~sex, xlev = list( : 
+  factor sex has new levels 1, 2
+"
